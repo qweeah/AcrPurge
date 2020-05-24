@@ -70,8 +70,7 @@ namespace AcrPurge
 $@"
 version: v1.1.0
 steps:
-  - cmd: {purgeCmd}
-    timeout: {purgeOptions.TimeoutInSeconds}";
+  - cmd: {purgeCmd}";
 
             var run = await registryClient.Registries.ScheduleRunAsync(
                 registryOptions.ResourceGroupName,
@@ -80,7 +79,7 @@ steps:
                 {
                     EncodedTaskContent = Convert.ToBase64String(Encoding.UTF8.GetBytes(taskString)),
                     Platform = new PlatformProperties(OS.Linux),
-                    Timeout = 60 * 10, // 10 minutes
+                    Timeout = purgeOptions.TimeoutInSeconds,
                     AgentConfiguration = new AgentProperties(cpu: 2)
                 }).ConfigureAwait(false);
 
