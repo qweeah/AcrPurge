@@ -1,15 +1,18 @@
-﻿using Microsoft.Azure.Management.ContainerRegistry;
+﻿using Microsoft.Azure.ContainerRegistry;
+using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using System;
+using System.Net.Http;
 
 namespace AcrPurge
 {
     internal class AzureUtility
     {
         private readonly AzureCredentials credential;
+        private HttpClient _httpClient = new HttpClient();
 
-        public ContainerRegistryManagementClient RegistryClient { get; private set; }
+        public ContainerRegistryManagementClient RegistryManagementClient { get; private set; }
 
         public AzureUtility(AzureEnvironment environment, string tenantId, string subscriptionId, string miClientId, string spClientId, string spClientSecret)
         {
@@ -47,8 +50,13 @@ namespace AcrPurge
                 throw new ArgumentNullException("No subscription credential");
             }
 
-            RegistryClient = new ContainerRegistryManagementClient(credential.WithDefaultSubscription(subscriptionId));
-            RegistryClient.SubscriptionId = subscriptionId;
+            RegistryManagementClient = new ContainerRegistryManagementClient(credential.WithDefaultSubscription(subscriptionId));
+            RegistryManagementClient.SubscriptionId = subscriptionId;
+        }
+
+        public static AzureContainerRegistryClient NewAcrClient(string acrName, string spClientId, string spClientSecret) { 
+            var credential = new ContainerRegistryCredentials(ContainerRegistryCredentials.LoginMode.Basic, $"{acrName}.azurecr.io", spClientId, spClientSecret);
+            return new AzureContainerRegistryClient(credential, new HttpClient(), disposeHttpClient: false);
         }
     }
 }

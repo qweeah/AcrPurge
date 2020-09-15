@@ -5,7 +5,7 @@ namespace AcrPurge
     public class Options
     {
         public RegistryOptions Registry { get; set; }
-        public PurgeOptions Purge { get; set; }
+        public DeleteOptions Delete { get; set; }
 
         public void Validate()
         {
@@ -14,14 +14,14 @@ namespace AcrPurge
                 throw new ArgumentNullException(nameof(Registry));
             }
 
-            if (Purge == null)
+            if (Delete == null)
             {
-                throw new ArgumentNullException(nameof(Purge));
+                throw new ArgumentNullException(nameof(Delete));
             }
 
             Registry.Validate();
 
-            Purge.Validate();
+            Delete.Validate();
         }
     }
 }
